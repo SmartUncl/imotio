@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="ru">
+<head>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1" />
+ <title>imot.io • Калькулятор бейджей 2025</title>
+ <style>
+  :root{
+   /* Визуальный вайб близкий к imot.io: тёмный фон + фиолетово-циановый акцент */
+   --bg-0:#050814;
+   --bg-1:#0b1020;
+   --panel:#0f172a;
+   --panel-2:#111b33;
+   --text:#e6e8ee;
+   --muted:#9aa4b2;
+   --accent:#7c3aed;
+   --accent-2:#22d3ee;
+   --good:#10b981;
+   --danger:#ef4444;
+   --border:rgba(255,255,255,0.08);
+   --shadow: 0 10px 28px rgba(0,0,0,0.35);
+   --radius-1: 14px;
+   --radius-2: 20px;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+   margin:0;
+   color:var(--text);
+   font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+   background:
+    radial-gradient(900px 500px at 10% 10%, rgba(124,58,237,0.16), transparent 45%),
+    radial-gradient(900px 500px at 90% 15%, rgba(34,211,238,0.12), transparent 45%),
+    linear-gradient(180deg, var(--bg-1), var(--bg-0) 70%);
+  }
+
+  .container{
+   max-width: 1120px;
+   margin: 0 auto;
+   padding: 18px 16px 34px;
+  }
+
+  .topbar{
+   display:flex;
+   align-items:center;
+   justify-content:space-between;
+   gap: 12px;
+   margin-bottom: 14px;
+  }
+  .brand{
+   display:flex;
+   align-items:center;
+   gap: 10px;
+  }
+  .brand-badge{
+   width: 34px; height: 34px;
+   border-radius: 12px;
+   background:
+    linear-gradient(135deg, rgba(124,58,237,0.95), rgba(34,211,238,0.9));
+   box-shadow: inset 0 0 12px rgba(255,255,255,0.18), 0 6px 18px rgba(0,0,0,0.35);
+   flex: 0 0 auto;
+  }
+  .brand-title{
+   font-weight: 700;
+   letter-spacing: .2px;
+   font-size: 20px;
+  }
+  .brand-sub{
+   font-size: 11px;
+   color: var(--muted);
+   margin-top: 1px;
+  }
+
+  .pill{
+   font-size: 11px;
+   color: var(--muted);
+   padding: 6px 10px;
+   border-radius: 999px;
+   border: 1px solid var(--border);
+   background: rgba(255,255,255,0.03);
+   white-space: nowrap;
+  }
+
+  .tabs{
+   display:flex;
+   gap: 8px;
+   flex-wrap: wrap;
+   margin-bottom: 12px;
+  }
+  .tab-btn{
+   appearance:none;
+   border: 1px solid var(--border);
+   background: rgba(255,255,255,0.035);
+   color: var(--text);
+   padding: 9px 12px;
+   border-radius: 999px;
+   font-size: 11.5px;
+   cursor:pointer;
+   transition: border .15s, background .15s, transform .15s;
+  }
+  .tab-btn:hover{ transform: translateY(-1px); }
+  .tab-btn.active{
+   border-color: rgba(124,58,237,0.55);
+   background:
+    linear-gradient(135deg, rgba(124,58,237,0.18), rgba(34,211,238,0.12));
+   box-shadow: 0 0 0 1px rgba(124,58,237,0.12) inset;
+  }
+
+  .grid{
+   display:grid;
+   grid-template-columns: 380px 1fr;
+   gap: 14px;
+  }
+
+  .card{
+   background:
+    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.012));
+   border: 1px solid var(--border);
+   border-radius: var(--radius-2);
+   box-shadow: var(--shadow);
+   padding: 16px 16px 14px;
+  }
+
+  .card h3{
+   margin: 0 0 10px;
+   font-size: 16px;
+   font-weight: 650;
+  }
+  .muted{color:var(--muted)}
+  .small{font-size: 11px}
+
+  .field{ margin-bottom: 12px; }
+  label{
+   display:block;
+   font-size: 11px;
+   color: var(--muted);
+   margin-bottom: 6px;
+  }
+
+  input[type="number"], input[type="text"]{
+   width:100%;
+   padding: 11px 12px;
+   border-radius: var(--radius-1);
+   border: 1px solid var(--border);
+   background: rgba(255,255,255,0.04);
+   color: var(--text);
+   outline: none;
+   transition: border .15s, background .15s;
+  }
+  input:focus{
+   border-color: rgba(124,58,237,0.5);
+   background: rgba(255,255,255,0.07);
+  }
+
+  .row{
+   display:grid;
+   grid-template-columns: 1fr 1fr;
+   gap: 10px;
+  }
+
+  .hint{
+   font-size: 10px;
+   color: var(--muted);
+   line-height: 1.35;
+  }
+
+  .divider{
+   height: 1px;
+   background: var(--border);
+   margin: 14px 0;
+  }
+
+  .metrics{
+   display:grid;
+   grid-template-columns: repeat(3, 1fr);
+   gap: 10px;
+   margin: 10px 0 4px;
+  }
+  .metric{
+   padding: 12px 12px;
+   border-radius: var(--radius-1);
+   border: 1px solid var(--border);
+   background: rgba(255,255,255,0.035);
+  }
+  .metric .k{
+   font-size: 10px;
+   color: var(--muted);
+   margin-bottom: 6px;
+  }
+  .metric .v{
+   font-size: 17px;
+   font-weight: 700;
+   letter-spacing: .2px;
+  }
+
+  table{
+   width: 100%;
+   border-collapse: collapse;
+   overflow: hidden;
+   border-radius: var(--radius-1);
+   border: 1px solid var(--border);
+   background: rgba(255,255,255,0.02);
+  }
+  thead th{
+   text-align:left;
+   font-size: 10px;
+   color: var(--muted);
+   padding: 10px 10px;
+   background: rgba(255,255,255,0.04);
+   border-bottom: 1px solid var(--border);
+  }
+  tbody td{
+   padding: 10px 10px;
+   font-size: 12px;
+   border-bottom: 1px solid rgba(255,255,255,0.05);
+   vertical-align: top;
+  }
+  tbody tr:last-child td{border-bottom: none}
+
+  .service{ font-weight: 600; }
+  .desc{
+   color: var(--muted);
+   font-size: 10.5px;
+   margin-top: 2px;
+  }
+
+  .total-box{
+   display:flex;
+   align-items:center;
+   justify-content:space-between;
+   gap: 10px;
+   margin-top: 12px;
+   padding: 14px 14px;
+   border-radius: var(--radius-1);
+   border: 1px solid rgba(124,58,237,0.35);
+   background:
+    linear-gradient(135deg, rgba(124,58,237,0.15), rgba(34,211,238,0.10));
+  }
+  .total-box .label{
+   font-size: 11px;
+   color: var(--muted);
+  }
+  .total-box .value{
+   font-size: 22px;
+   font-weight: 800;
+  }
+
+  .status{
+   margin-top: 10px;
+   font-size: 11px;
+   color: var(--muted);
+   min-height: 14px;
+  }
+
+  .badge-note{
+   padding: 10px 11px;
+   border-radius: var(--radius-1);
+   border: 1px dashed rgba(255,255,255,0.12);
+   background: rgba(255,255,255,0.02);
+   margin-top: 10px;
+  }
+
+  @media (max-width: 980px){
+   .grid{grid-template-columns: 1fr}
+  }
+ </style>
+</head>
+<body>
+ <div class="container">
+  <div class="topbar">
+   <div class="brand">
+    <div class="brand-badge"></div>
+    <div>
+     <div class="brand-title">imot.io • калькулятор бейджей 2025</div>
+     <div class="brand-sub">Выкуп устройств + речевая аналитика (партнёрский расчёт)</div>
+    </div>
+   </div>
+   <div class="pill">Коммерческий расчёт</div>
+  </div>
+
+  <div class="tabs">
+   <button class="tab-btn active" data-tab="voca">VocaTech (годовая модель)</button>
+   <button class="tab-btn" data-tab="oktava">OKTAVA АБ-400 (помесячная модель)</button>
+  </div>
+
+  <div class="grid">
+   <!-- LEFT: INPUTS -->
+   <div class="card">
+    <div id="form-voca">
+     <h3>Параметры VocaTech</h3>
+
+     <div class="field">
+      <label>Заказчик</label>
+      <input id="v_customer" type="text" placeholder="Например, ООО Ромашка" />
+     </div>
+
+     <div class="divider"></div>
+
+     <h3>Устройства VocaTech</h3>
+     <div class="row">
+      <div class="field">
+       <label>Кол-во аудиобейджей</label>
+       <input id="v_devices_qty" type="number" min="1" step="1" value="110" />
+      </div>
+      <div class="field">
+       <label>Цена за 1 бейдж, руб (в т.ч. НДС 20%)</label>
+       <input id="v_device_price" type="number" min="0" step="1" value="25000" />
+      </div>
+     </div>
+     <div class="field">
+      <label>Скидка на железо (доля, например 0.05 = 5%)</label>
+      <input id="v_device_discount" type="number" min="0" max="1" step="0.01" value="0" />
+      <div class="hint"></div>
+     </div>
+
+     <div class="divider"></div>
+
+     <h3>Лицензии imot.io</h3>
+     <div class="row">
+      <div class="field">
+       <label>Кол-во лицензий</label>
+       <input id="v_license_qty" type="number" min="1" step="1" value="110" />
+      </div>
+      <div class="field">
+       <label>Цена за 1 лицензию в год, руб (НДС не облагается)</label>
+       <input id="v_license_price" type="number" min="0" step="1" value="130000" />
+      </div>
+     </div>
+     <div class="field">
+      <label>Скидка на речевую аналитику (доля)</label>
+      <input id="v_license_discount" type="number" min="0" max="1" step="0.01" value="0" />
+      <div class="hint"></div>
+     </div>
+
+     <div class="divider"></div>
+
+     <h3>Опции</h3>
+     <div class="row">
+      <div class="field">
+       <label>Доставка: кол-во офисов/адресов</label>
+       <input id="v_delivery_qty" type="number" min="0" step="1" value="1" />
+      </div>
+      <div class="field">
+       <label>Доставка: цена за 1 офис, руб (в т.ч. НДС 20%)</label>
+       <input id="v_delivery_price" type="number" min="0" step="1" value="3840" />
+      </div>
+     </div>
+
+     <div class="row">
+      <div class="field">
+       <label>Расширенная техподдержка: кол-во</label>
+       <input id="v_support_qty" type="number" min="0" step="1" value="1" />
+      </div>
+      <div class="field">
+       <label>Расширенная техподдержка: цена, руб/год (в т.ч. НДС 20%)</label>
+       <input id="v_support_price" type="number" min="0" step="1" value="17280" />
+      </div>
+     </div>
+
+     <div class="badge-note">
+      <div class="hint">
+       Минимальный объём в продажу: 50 бейджей. Минимальный срок лицензии: 1 год.
+       
+      </div>
+     </div>
+    </div>
+
+    <div id="form-oktava" style="display:none">
+     <h3>Параметры OKTAVA АБ-400</h3>
+
+     <div class="field">
+      <label>Заказчик</label>
+      <input id="o_customer" type="text" placeholder="Например, ООО Ромашка" />
+     </div>
+
+     <div class="divider"></div>
+
+     <h3>Комплекты АБ-400</h3>
+     <div class="row">
+      <div class="field">
+       <label>Кол-во комплектов (4 бейджа + 1 базовая станция)</label>
+       <input id="o_kits_qty" type="number" min="1" step="1" value="1" />
+      </div>
+      <div class="field">
+       <label>Цена за 1 комплект, руб (в т.ч. НДС 20%)</label>
+       <input id="o_kit_price" type="number" min="0" step="1" value="120000" />
+      </div>
+     </div>
+     <div class="field">
+      <label>Скидка на железо (доля)</label>
+      <input id="o_kit_discount" type="number" min="0" max="1" step="0.01" value="0" />
+      <div class="hint"></div>
+     </div>
+
+     <div class="divider"></div>
+
+     <h3>Лицензии imot.io</h3>
+     <div class="row">
+      <div class="field">
+       <label>Кол-во лицензий (обычно = кол-ву комплектов)</label>
+       <input id="o_license_qty" type="number" min="1" step="1" value="1" />
+      </div>
+      <div class="field">
+       <label>Цена за 1 МЕСЯЦ за комплект, руб (НДС не облагается)</label>
+       <input id="o_license_price" type="number" min="0" step="1" value="66000" />
+      </div>
+     </div>
+     <div class="field">
+      <label>Скидка на речевую аналитику (доля)</label>
+      <input id="o_license_discount" type="number" min="0" max="1" step="0.01" value="0" />
+      <div class="hint"></div>
+     </div>
+
+     <div class="divider"></div>
+
+     <h3>Опция доставки</h3>
+     <div class="row">
+      <div class="field">
+       <label>Кол-во офисов/адресов</label>
+       <input id="o_delivery_qty" type="number" min="0" step="1" value="1" />
+      </div>
+      <div class="field">
+       <label>Цена за 1 офис, руб (в т.ч. НДС 20%)</label>
+       <input id="o_delivery_price" type="number" min="0" step="1" value="4000" />
+      </div>
+     </div>
+
+     <div class="badge-note">
+      <div class="hint">
+       Минимальный объём в продажу: 4 бейджа + хаб (1 комплект). Минимальный срок лицензии: 1 месяц.
+      </div>
+     </div>
+    </div>
+
+    <div class="status small" id="statusLine"></div>
+   </div>
+
+   <!-- RIGHT: RESULTS -->
+   <div class="card">
+    <h3>Результат расчёта</h3>
+
+    <div class="metrics">
+     <div class="metric">
+      <div class="k" id="mLabel1">Единиц</div>
+      <div class="v" id="mUnits">—</div>
+     </div>
+     <div class="metric">
+      <div class="k" id="mLabel2">Период</div>
+      <div class="v" id="mPeriod">—</div>
+     </div>
+     <div class="metric">
+      <div class="k" id="mLabel3">Лицензия / мес / устройство</div>
+      <div class="v" id="mPerDeviceMonth">—</div>
+     </div>
+    </div>
+
+    <table>
+     <thead>
+      <tr>
+       <th style="width:40%">Позиция</th>
+       <th style="width:14%">Кол-во</th>
+       <th style="width:23%">Цена</th>
+       <th style="width:23%">Стоимость</th>
+      </tr>
+     </thead>
+     <tbody id="linesBody">
+      <tr>
+       <td colspan="4" class="muted small">Пока нет данных расчёта.</td>
+      </tr>
+     </tbody>
+    </table>
+
+    <div class="total-box">
+     <div>
+      <div class="label" id="totalLabel">Итого за период</div>
+      <div class="small muted" id="totalSub">Предварительный расчёт стоимости решения.</div>
+     </div>
+     <div class="value" id="totalValue">—</div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="small muted" id="secondaryTotal"></div>
+    <div class="small muted" id="customerEcho"></div>
+   </div>
+  </div>
+ </div>
+
+ <script>
+  // -----------------------------
+  // ЛОГИКА РАСЧЁТА
+  // Максимально близко к Excel:
+  //  - VOCA Выкуп + речевая аналитика
+  //  - OKTAVA Выкуп + речевая аналитика
+  // -----------------------------
+
+  const rub = (n) => {
+   if (typeof n !== "number" || isNaN(n)) return "—";
+   return new Intl.NumberFormat("ru-RU").format(Math.round(n)) + " ₽";
+  };
+
+  function num(id, fallback=0){
+   const v = document.getElementById(id)?.value;
+   const n = parseFloat(String(v ?? ""));
+   return Number.isFinite(n) ? n : fallback;
+  }
+  function text(id){
+   return (document.getElementById(id)?.value || "").trim();
+  }
+
+  function setStatus(msg){
+   document.getElementById("statusLine").textContent = msg || "";
+  }
+
+  function renderLines(lines){
+   const body = document.getElementById("linesBody");
+   body.innerHTML = "";
+   if (!lines?.length){
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="4" class="muted small">Нет данных.</td>`;
+    body.appendChild(tr);
+    return;
+   }
+   for (const l of lines){
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+     <td>
+      <div class="service">${l.service}</div>
+      ${l.description ? `<div class="desc">${l.description}</div>` : ""}
+     </td>
+     <td>${(l.qty ?? 0).toLocaleString("ru-RU")}</td>
+     <td>${rub(l.unit_price ?? 0)}</td>
+     <td><strong>${rub(l.cost ?? 0)}</strong></td>
+    `;
+    body.appendChild(tr);
+   }
+  }
+
+  function calcVoca(){
+   // Excel-аналоги:
+   // B12 qty devices
+   // C12 price per device
+   // D12 discount rate
+   // E12 = C12 - C12*D12
+   // F12 = E12*B12
+   //
+   // B16 qty licenses
+   // C16 price per license/year
+   // D16 discount rate
+   // E16 = C16 - C16*D16
+   // F16 = B16*E16
+   //
+   // B20 delivery qty offices
+   // C20 delivery unit
+   // F20 = B20*C20
+   //
+   // B24 support qty
+   // C24 support unit
+   // F24 = B24*C24
+   //
+   // I12 = F12+F16+F20+F24
+   // J12 = F16/12/B16
+   // K12 = F16+F24
+
+   const devices_qty = Math.max(0, Math.round(num("v_devices_qty", 0)));
+   const device_price = Math.max(0, num("v_device_price", 0));
+   const device_discount = Math.max(0, Math.min(1, num("v_device_discount", 0)));
+   const device_price_disc = device_price - device_price * device_discount;
+   const devices_total = device_price_disc * devices_qty;
+
+   const license_qty = Math.max(0, Math.round(num("v_license_qty", 0)));
+   const license_price = Math.max(0, num("v_license_price", 0));
+   const license_discount = Math.max(0, Math.min(1, num("v_license_discount", 0)));
+   const license_price_disc = license_price - license_price * license_discount;
+   const licenses_total = license_qty * license_price_disc;
+
+   const delivery_qty = Math.max(0, Math.round(num("v_delivery_qty", 0)));
+   const delivery_price = Math.max(0, num("v_delivery_price", 0));
+   const delivery_total = delivery_qty * delivery_price;
+
+   const support_qty = Math.max(0, Math.round(num("v_support_qty", 0)));
+   const support_price = Math.max(0, num("v_support_price", 0));
+   const support_total = support_qty * support_price;
+
+   const total_first_year = devices_total + licenses_total + delivery_total + support_total;
+   const per_device_month = license_qty > 0 ? (licenses_total / 12 / license_qty) : 0;
+   const total_second_year = licenses_total + support_total;
+
+   const lines = [
+    {
+     service: "Wi-Fi аудиобейдж VocaTech",
+     description: "Железо. Цена за 1 бейдж указана с НДС 20%.",
+     qty: devices_qty,
+     unit_price: device_price_disc,
+     cost: devices_total,
+    },
+    {
+     service: "ПО imot.io (речевая аналитика)",
+     description: "Срочная неисключительная лицензия на 1 канал, срок 1 год. НДС не облагается.",
+     qty: license_qty,
+     unit_price: license_price_disc,
+     cost: licenses_total,
+    },
+    {
+     service: "Доставка",
+     description: "Опция. Цена указана с НДС 20%.",
+     qty: delivery_qty,
+     unit_price: delivery_price,
+     cost: delivery_total,
+    },
+    {
+     service: "Расширенная техподдержка",
+     description: "Опция. Цена указана с НДС 20%. Формула соответствует Excel (B24*C24).",
+     qty: support_qty,
+     unit_price: support_price,
+     cost: support_total,
+    },
+   ];
+
+   return {
+    lines,
+    units_label: "Бейджи",
+    units_value: devices_qty,
+    period_primary_label: "Первый год",
+    period_secondary_label: "Со второго года",
+    total_primary: total_first_year,
+    total_secondary: total_second_year,
+    per_device_month,
+    customer: text("v_customer"),
+   };
+  }
+
+  function calcOktava(){
+   // Excel-аналоги:
+   // B12 qty kits
+   // C12 price per kit
+   // D12 discount rate
+   // E12 = C12 - C12*D12
+   // F12 = E12*B12
+   //
+   // B16 qty licenses
+   // C16 price per month per kit
+   // D16 discount rate
+   // E16 = C16 - C16*D16
+   // F16 = B16*E16
+   //
+   // B20 delivery qty
+   // C20 delivery unit price
+   // F20 = B20*C20
+   //
+   // I12 = F12+F16+F20
+   // J12 = F16/B16/4
+   // K12 = F16
+
+   const kits_qty = Math.max(0, Math.round(num("o_kits_qty", 0)));
+   const kit_price = Math.max(0, num("o_kit_price", 0));
+   const kit_discount = Math.max(0, Math.min(1, num("o_kit_discount", 0)));
+   const kit_price_disc = kit_price - kit_price * kit_discount;
+   const hardware_total = kit_price_disc * kits_qty;
+
+   const license_qty = Math.max(0, Math.round(num("o_license_qty", 0)));
+   const license_price = Math.max(0, num("o_license_price", 0));
+   const license_discount = Math.max(0, Math.min(1, num("o_license_discount", 0)));
+   const license_price_disc = license_price - license_price * license_discount;
+   const licenses_total = license_qty * license_price_disc;
+
+   const delivery_qty = Math.max(0, Math.round(num("o_delivery_qty", 0)));
+   const delivery_price = Math.max(0, num("o_delivery_price", 0));
+   const delivery_total = delivery_qty * delivery_price;
+
+   const total_first_month = hardware_total + licenses_total + delivery_total;
+   const per_device_month = license_qty > 0 ? (licenses_total / license_qty / 4) : 0;
+   const total_second_month = licenses_total;
+
+   const lines = [
+    {
+     service: "Комплект OKTAVA АБ-400",
+     description: "4 аудиобейджа + 1 базовая станция. Цена указана с НДС 20%.",
+     qty: kits_qty,
+     unit_price: kit_price_disc,
+     cost: hardware_total,
+    },
+    {
+     service: "ПО imot.io (речевая аналитика)",
+     description: "Срочная неисключительная лицензия, срок 1 месяц. Цена за комплект. НДС не облагается.",
+     qty: license_qty,
+     unit_price: license_price_disc,
+     cost: licenses_total,
+    },
+    {
+     service: "Доставка",
+     description: "Опция. Цена указана с НДС 20%.",
+     qty: delivery_qty,
+     unit_price: delivery_price,
+     cost: delivery_total,
+    },
+   ];
+
+   return {
+    lines,
+    units_label: "Комплекты",
+    units_value: kits_qty,
+    period_primary_label: "Первый месяц",
+    period_secondary_label: "Со второго месяца",
+    total_primary: total_first_month,
+    total_secondary: total_second_month,
+    per_device_month,
+    customer: text("o_customer"),
+   };
+  }
+
+  let activeTab = "voca";
+
+  function recalc(){
+   let data;
+   if (activeTab === "voca"){
+    data = calcVoca();
+   } else {
+    data = calcOktava();
+   }
+
+   // Minimal validation
+   if (activeTab === "voca"){
+    if (data.units_value < 1){
+     setStatus("Количество бейджей должно быть не меньше 1.");
+    } else {
+     setStatus("");
+    }
+   } else {
+    if (data.units_value < 1){
+     setStatus("Количество комплектов должно быть не меньше 1.");
+    } else {
+     setStatus("");
+    }
+   }
+
+   renderLines(data.lines);
+
+   // Metrics
+   document.getElementById("mLabel1").textContent = data.units_label;
+   document.getElementById("mUnits").textContent = (data.units_value ?? 0).toLocaleString("ru-RU");
+   document.getElementById("mLabel2").textContent = "Основной период";
+   document.getElementById("mPeriod").textContent = data.period_primary_label;
+   document.getElementById("mLabel3").textContent = "Лицензия / мес / устройство";
+   document.getElementById("mPerDeviceMonth").textContent = rub(data.per_device_month);
+
+   // Totals
+   document.getElementById("totalLabel").textContent = `Итого за ${data.period_primary_label.toLowerCase()}`;
+   document.getElementById("totalValue").textContent = rub(data.total_primary);
+
+   const sec = document.getElementById("secondaryTotal");
+   sec.textContent = data.total_secondary != null
+    ? `Итого ${data.period_secondary_label.toLowerCase()}: ${rub(data.total_secondary)}`
+    : "";
+
+   const ce = document.getElementById("customerEcho");
+   ce.textContent = data.customer ? ("Заказчик: " + data.customer) : "";
+  }
+
+  function switchTab(tab){
+   activeTab = tab;
+
+   document.querySelectorAll(".tab-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.tab === tab);
+   });
+
+   document.getElementById("form-voca").style.display = tab === "voca" ? "block" : "none";
+   document.getElementById("form-oktava").style.display = tab === "oktava" ? "block" : "none";
+
+   recalc();
+  }
+
+  // Tabs events
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+   btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+  });
+
+  // Watch inputs
+  const watch = [
+   "v_customer",
+   "v_devices_qty","v_device_price","v_device_discount",
+   "v_license_qty","v_license_price","v_license_discount",
+   "v_delivery_qty","v_delivery_price",
+   "v_support_qty","v_support_price",
+   "o_customer",
+   "o_kits_qty","o_kit_price","o_kit_discount",
+   "o_license_qty","o_license_price","o_license_discount",
+   "o_delivery_qty","o_delivery_price",
+  ];
+
+  watch.forEach(id => {
+   const el = document.getElementById(id);
+   if (!el) return;
+   const handler = () => {
+    window.clearTimeout(window.__recalc_t);
+    window.__recalc_t = window.setTimeout(recalc, 80);
+   };
+   el.addEventListener("input", handler);
+   el.addEventListener("change", handler);
+  });
+
+  // Initial
+  recalc();
+ </script>
+</body>
+</html>
