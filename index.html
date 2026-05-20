@@ -1,0 +1,1471 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Imotio × Vocatech — Sales Knowledge Base</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --panel: #ffffff;
+      --panel2: #f7f9fc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: rgba(15, 23, 42, 0.10);
+      --shadow: 0 10px 28px rgba(15,23,42,.08);
+      --radius: 18px;
+      --blue: #3C81F0;
+      --green: #22C55D;
+      --navy: #243042;
+      --navy2: #1f2a3a;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      min-height: 100vh;
+    }
+    .sidebar {
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      padding: 18px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 14px;
+    }
+    .brand { display: flex; gap: 10px; align-items: center; }
+    .logo {
+      width: 34px; height: 34px; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(60,129,240,.18), rgba(34,197,93,.16));
+      border: 1px solid var(--line);
+      display: grid; place-items: center;
+      font-weight: 800; color: var(--blue);
+    }
+    .brand h1 { margin: 0; font-size: 14px; letter-spacing: .2px; line-height: 1.2; }
+    .brand p { margin: 2px 0 0 0; font-size: 12px; color: var(--muted); line-height: 1.2; }
+
+    .search { display: grid; gap: 8px; }
+    .searchbar {
+      display: flex; gap: 10px; align-items: center;
+      padding: 10px 12px; border: 1px solid var(--line);
+      border-radius: 14px; background: var(--panel2);
+    }
+    .searchbar input {
+      border: 0; outline: none; background: transparent;
+      width: 100%; font-size: 13px; color: var(--text);
+    }
+    .kbd {
+      font-family: var(--mono); font-size: 11px; color: var(--muted);
+      padding: 2px 6px; border: 1px solid var(--line);
+      border-bottom-width: 2px; border-radius: 10px; background: #fff;
+    }
+    .results {
+      display: none; border: 1px solid var(--line); border-radius: 14px;
+      overflow: hidden; background: var(--panel); box-shadow: var(--shadow);
+      max-height: 260px; overflow-y: auto;
+    }
+    .results.active { display: block; }
+    .result { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--line); }
+    .result:last-child { border-bottom: 0; }
+    .result:hover { background: rgba(60,129,240,.06); }
+    .result .where { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .nav { display: grid; gap: 6px; align-content: start; }
+    .nav-item {
+      border: 1px solid transparent; background: transparent; text-align: left;
+      padding: 10px 12px; border-radius: 14px; cursor: pointer;
+      font-size: 13px; color: var(--text);
+    }
+    .nav-item:hover {
+      background: rgba(60,129,240,.05);
+      border-color: rgba(60,129,240,.18);
+    }
+    .nav-item.active {
+      background: rgba(60,129,240,.10);
+      border-color: rgba(60,129,240,.28);
+      box-shadow: 0 0 0 2px rgba(60,129,240,.10) inset;
+      color: #0b3a9a;
+      font-weight: 700;
+    }
+    .sidebar-footer { display: grid; gap: 10px; border-top: 1px solid var(--line); padding-top: 14px; }
+
+    .btn {
+      border: 1px solid var(--line); background: #fff;
+      padding: 10px 12px; border-radius: 14px;
+      cursor: pointer; font-size: 13px; color: var(--text);
+    }
+    .btn:hover { border-color: rgba(60,129,240,.35); }
+    .btn-sm { padding: 8px 10px; font-size: 12px; border-radius: 12px; }
+    .btn-ghost { background: transparent; }
+
+    .main { padding: 22px 22px 72px; }
+    .top { display: flex; gap: 12px; justify-content: space-between; align-items: flex-end; margin-bottom: 14px; }
+    .top h2 { margin: 0; font-size: 18px; letter-spacing: .2px; }
+    .top p { margin: 4px 0 0 0; color: var(--muted); font-size: 13px; }
+
+    .meta { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .chip {
+      font-size: 12px; color: var(--muted);
+      background: #fff; border: 1px solid var(--line);
+      padding: 6px 10px; border-radius: 999px;
+    }
+
+    .pane { display: none; max-width: 1040px; }
+    .pane.active { display: block; }
+
+    .pane-head {
+      background: #fff; border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+    .pane-head h2 { margin: 0 0 6px 0; font-size: 22px; }
+    .pane-head p { margin: 0; color: var(--muted); line-height: 1.5; }
+
+    .card {
+      background: #fff; border: 1px solid var(--line);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+      margin-top: 12px; overflow: hidden;
+    }
+    .card-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 12px 14px; border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(60,129,240,.06), rgba(255,255,255,0));
+    }
+    .card-head h3 { margin: 0; font-size: 15px; }
+    .card-actions { display: flex; gap: 8px; align-items: center; }
+    .icon-btn {
+      width: 30px; height: 30px; border-radius: 10px;
+      border: 1px solid var(--line); background: #fff;
+      cursor: pointer; font-weight: 800; color: #3b82f6;
+    }
+    .icon-btn:hover { border-color: rgba(60,129,240,.35); background: rgba(60,129,240,.05); }
+
+    .card-body { padding: 12px 14px 14px; }
+    .bullets { margin: 0; padding-left: 18px; line-height: 1.6; }
+    .bullets li { margin: 6px 0; }
+    .muted { color: var(--muted); font-size: 12px; margin: 0 0 10px 0; }
+
+    .tpl {
+      margin-top: 12px; border: 1px dashed rgba(60,129,240,.35);
+      background: rgba(60,129,240,.05);
+      border-radius: 16px; overflow: hidden;
+    }
+    .tpl-head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 12px; border-bottom: 1px dashed rgba(60,129,240,.35);
+    }
+    .tpl-title { font-size: 12px; color: #0b3a9a; font-weight: 700; }
+    pre {
+      margin: 0; padding: 12px; font-family: var(--mono);
+      font-size: 12px; line-height: 1.5;
+      white-space: pre-wrap; word-break: break-word;
+    }
+
+    .checklist { display: grid; gap: 8px; padding-top: 6px; }
+    .chk {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 10px 10px; border: 1px solid var(--line);
+      border-radius: 14px; background: var(--panel2);
+    }
+    .chk input { margin-top: 2px; transform: scale(1.15); }
+
+    /* Pricing cards like screenshot */
+    .grid-2 {
+      display: grid; gap: 14px; grid-template-columns: 1fr 1fr;
+      margin-top: 12px;
+    }
+    .price-card {
+      background: #fff; border: 1px solid var(--line);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 14px 16px 12px; position: relative; overflow: hidden;
+    }
+    .price-card::before {
+      content: ""; position: absolute; left: 0; top: 0; right: 0;
+      height: 4px; background: var(--blue);
+    }
+    .price-card.accent-green::before { background: var(--green); }
+    .price-title { font-size: 18px; font-weight: 900; margin-bottom: 10px; }
+    .price-title.blue { color: var(--blue); }
+    .price-title.green { color: var(--green); }
+    .price-rows { display: grid; gap: 10px; padding-top: 2px; }
+    .row {
+      display: flex; justify-content: space-between; gap: 16px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--line); color: #111827;
+    }
+    .row:last-child { border-bottom: 0; padding-bottom: 0; }
+    .row .val { font-weight: 800; white-space: nowrap; }
+    .note { margin-top: 10px; color: var(--muted); font-size: 12px; }
+
+    /* Calculator section */
+    .calc {
+      margin-top: 14px; border-radius: 22px;
+      background: linear-gradient(180deg, var(--navy), var(--navy2));
+      color: #fff; padding: 18px;
+      box-shadow: 0 18px 44px rgba(15,23,42,.16);
+    }
+    .calc-head {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 12px; margin-bottom: 14px;
+    }
+    .calc-title { font-size: 22px; font-weight: 900; margin: 0; }
+    .calc-sub {
+      font-size: 13px; color: rgba(255,255,255,.75);
+      margin-top: 6px; max-width: 660px; line-height: 1.4;
+    }
+    .calc-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .calc .btn { background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18); color: #fff; }
+    .calc .btn:hover { border-color: rgba(255,255,255,.28); background: rgba(255,255,255,.14); }
+
+    .calc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .field {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px; padding: 12px;
+    }
+    .field label { display: block; font-size: 12px; color: rgba(255,255,255,.75); margin-bottom: 8px; }
+    .field input, .field select {
+      width: 100%; border: 1px solid rgba(255,255,255,.14);
+      border-radius: 12px; padding: 10px 10px;
+      background: rgba(0,0,0,.15); color: #fff; outline: none; font-size: 13px;
+    }
+    .hint { font-size: 11px; color: rgba(255,255,255,.65); margin-top: 8px; }
+    .range { display: flex; gap: 10px; align-items: center; }
+    .range input[type="range"] { width: 100%; }
+    .range-val { min-width: 54px; text-align: right; font-weight: 800; }
+
+    .calc-out { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+    .out-card {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px; padding: 12px;
+    }
+    .out-card.total {
+      border-color: rgba(34,197,93,.35);
+      background: rgba(34,197,93,.10);
+    }
+    .out-label { font-size: 12px; color: rgba(255,255,255,.75); }
+    .out-val { margin-top: 8px; font-size: 18px; font-weight: 900; }
+    .out-mini { margin-top: 6px; font-size: 12px; font-weight: 800; color: rgba(255,255,255,.70); }
+
+    .calc-breakdown {
+      margin-top: 12px; font-family: var(--mono); font-size: 12px; line-height: 1.6;
+      color: rgba(255,255,255,.80);
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px; padding: 12px; white-space: pre-wrap;
+    }
+
+    /* Calculator v2 helpers */
+    .segmented {
+      display: inline-flex; gap: 6px; padding: 6px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
+      margin: 0 0 12px 0;
+    }
+    .seg-btn {
+      border: 1px solid transparent;
+      background: transparent;
+      color: rgba(255,255,255,.82);
+      padding: 10px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .seg-btn:hover {
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.12);
+    }
+    .seg-btn.active {
+      background: rgba(255,255,255,.18);
+      border-color: rgba(255,255,255,.18);
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(0,0,0,.12);
+    }
+    .calc-mini {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .mini-card {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .mini-label { font-size: 12px; color: rgba(255,255,255,.75); }
+    .mini-val { margin-top: 8px; font-size: 16px; font-weight: 900; }
+    @media (max-width: 1020px) { .calc-mini { grid-template-columns: 1fr; } }
+
+    .toast {
+      position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+      background: #fff; border: 1px solid var(--line);
+      padding: 10px 12px; border-radius: 14px;
+      box-shadow: var(--shadow); color: var(--text);
+      font-size: 13px; display: none; z-index: 9999;
+    }
+    .toast.show { display: block; animation: pop .16s ease-out; }
+    @keyframes pop {
+      from { opacity: .0; transform: translateX(-50%) translateY(6px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    @media (max-width: 1020px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { position: relative; height: auto; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .calc-grid { grid-template-columns: 1fr; }
+      .calc-out { grid-template-columns: 1fr 1fr; }
+    }
+    @media print {
+      .sidebar, .toast, .calc-actions, .icon-btn { display: none !important; }
+      .main { padding: 0; }
+      body { background: #fff; }
+      .calc { color: #000; background: #fff; border: 1px solid var(--line); }
+      .calc * { color: #000 !important; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">V</div>
+      <div>
+        <h1>Imotio × Vocatech</h1>
+        <p>Sales Knowledge Base • офлайн HTML</p>
+      </div>
+    </div>
+
+    <div class="search">
+      <div class="searchbar">
+        <span style="color: var(--muted);">🔎</span>
+        <input id="q" type="text" placeholder="Поиск по базе знаний..." />
+        <span class="kbd">/</span>
+      </div>
+      <div class="results" id="results"></div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <button class="nav-item" data-tab="info"><span>Общая информация</span></button>
+<button class="nav-item" data-tab="deal"><span>Процесс сделки</span></button>
+<button class="nav-item" data-tab="scripts"><span>Скрипты и Психология</span></button>
+<button class="nav-item" data-tab="pricing_calc"><span>Тарифы и Калькулятор</span></button>
+<button class="nav-item" data-tab="tech_faq"><span>Техника и FAQ</span></button>
+<button class="nav-item" data-tab="templates"><span>Шаблоны</span></button>
+<button class="nav-item" data-tab="materials"><span>Материалы</span></button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn" onclick="window.print()">Печать / PDF</button>
+      <button class="btn btn-ghost" id="collapseAll">Свернуть результаты поиска</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div>
+        <h2 id="topTitle">Общая информация</h2>
+        <p>Дата генерации: 21.01.2026 • Все данные и расчёты — по итогам встречи</p>
+      </div>
+      <div class="meta">
+        <span class="chip">Вкладок: 7</span>
+        <span class="chip">Есть калькулятор</span>
+        <span class="chip">Работает без интернета</span>
+      </div>
+    </div>
+
+    
+    <div class="pane" id="tab-info" data-tab="info">
+      <div class="pane-head">
+        <h2>Общая информация</h2>
+        <p>Сводка по встрече: продукт, ценность, ограничения и что важно зафиксировать до пилота.</p>
+      </div>
+      
+      
+      
+    <section class="card" id="info-c1" data-cardtitle="Коротко о главном">
+      <div class="card-head">
+        <h3>Коротко о главном</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#info-c1">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Фокус на одном производителе бейджей: Vocatech (Standard и Mini — различие по размеру).</li><li>Брендирование корпуса (цвет/логотип/надписи) — без доплат; можно убрать предупреждающие элементы по запросу.</li><li>Бейдж без кнопок: сотрудник сканирует QR при начале смены и ставит на зарядку для завершения смены/выгрузки.</li><li>Записи приходят порциями ~10 минут; в Imotio настраивается склейка и нарезка (по тегам/ключевым словам, при необходимости — по «тишине»).</li><li>Почти всегда начинаем с пилота (аренда). Перед стартом — обязательно закрепление клиента в Vocatech по ИНН.</li><li>Успех внедрения сильно зависит от работы с персоналом (снятие страхов, правильное позиционирование, профилактика саботажа).</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="info-c2" data-cardtitle="О партнёре (Voca‑Tech) — что можно использовать в презентации">
+      <div class="card-head">
+        <h3>О партнёре (Voca‑Tech) — что можно использовать в презентации</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#info-c2">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Облачные и физические модели работы (SaaS и On‑Premise).</li><li>Российское производство и разработка ПО.</li><li>Позиционирование: речевая аналитика для улучшения эффективности сотрудников и роста показателей.</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="info-c3" data-cardtitle="Быстрая навигация">
+      <div class="card-head">
+        <h3>Быстрая навигация</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#info-c3">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Поиск по базе знаний — начните вводить в строке сверху или нажмите /.</li><li>Слева — вкладки по темам. Ссылки на отдельные блоки копируются кнопкой «#».</li><li>Во вкладке «Тарифы и Калькулятор» — расчёт стоимости проекта и кнопка «Скопировать КП».</li></ul>
+        
+      </div>
+    </section>
+    
+    </div>
+    
+
+    <div class="pane" id="tab-deal" data-tab="deal">
+      <div class="pane-head">
+        <h2>Процесс сделки</h2>
+        <p>Пошагово — что делает партнёр на каждом этапе. Внизу — интерактивный чек‑лист.</p>
+      </div>
+      
+      
+        <section class="card" id="deal-checklist" data-cardtitle="Чек‑лист действий">
+          <div class="card-head">
+            <h3>Чек‑лист действий</h3>
+            <div class="card-actions">
+              <button class="btn btn-sm" id="deal-export">Экспорт</button>
+              <button class="btn btn-sm btn-ghost" id="deal-reset">Сброс</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="muted">Отметки сохраняются локально в вашем браузере (localStorage).</p>
+            <div class="checklist">
+              <label class="chk">
+                <input type="checkbox" data-check="deal-chk1">
+                <span>Квалификация (цель/ожидания/масштаб).</span>
+              </label>
+            
+              <label class="chk">
+                <input type="checkbox" data-check="deal-chk2">
+                <span>Закрепление клиента в Vocatech (ИНН + название).</span>
+              </label>
+            
+              <label class="chk">
+                <input type="checkbox" data-check="deal-chk3">
+                <span>Согласование пилота (кол-во/адрес/срок).</span>
+              </label>
+            
+              <label class="chk">
+                <input type="checkbox" data-check="deal-chk4">
+                <span>Сбор Wi‑Fi и списка сотрудников (опросный лист).</span>
+              </label>
+            
+              <label class="chk">
+                <input type="checkbox" data-check="deal-chk5">
+                <span>Запрос API‑ключа и включение интеграции в Imotio.</span>
+              </label>
+            
+              <label class="chk">
+                <input type="checkbox" data-check="deal-chk6">
+                <span>Инструктаж персонала и правила паузы/зарядки.</span>
+              </label>
+            
+              <label class="chk">
+                <input type="checkbox" data-check="deal-chk7">
+                <span>Настройка тегов/маркеров для склейки/нарезки.</span>
+              </label>
+            
+              <label class="chk">
+                <input type="checkbox" data-check="deal-chk8">
+                <span>Дизайн + оплата + запуск производства.</span>
+              </label>
+            
+              <label class="chk">
+                <input type="checkbox" data-check="deal-chk9">
+                <span>Логистика: доставка и возврат пилота.</span>
+              </label>
+            
+              <label class="chk">
+                <input type="checkbox" data-check="deal-chk10">
+                <span>Финальный контроль и ввод в эксплуатацию.</span>
+              </label>
+            </div>
+          </div>
+        </section>
+        
+      
+    <section class="card" id="deal-c1" data-cardtitle="Этап 0 — квалификация лида">
+      <div class="card-head">
+        <h3>Этап 0 — квалификация лида</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#deal-c1">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Уточнить цель: контроль/анализ речи сотрудников (а не гарантированная запись речи клиента целиком).</li><li>Зафиксировать ожидания: речь клиента может попадать частично; ценность — аналитика по речи сотрудника + GPT‑модуль.</li><li>Оценить масштаб: пилот возможен от 1 бейджа; закупка — обычно от 10+.</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="deal-c2" data-cardtitle="Этап 1 — закрепить клиента в Vocatech">
+      <div class="card-head">
+        <h3>Этап 1 — закрепить клиента в Vocatech</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#deal-c2">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Проверить, не закреплён ли клиент за другим партнёром.</li><li>Написать в чат Vocatech: ИНН + название компании, запрос на закрепление.</li><li>Если закрепить нельзя — не заходить в сделку «в обход»; действовать по правилам закрепления.</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="deal-c3" data-cardtitle="Этап 2 — согласовать пилот">
+      <div class="card-head">
+        <h3>Этап 2 — согласовать пилот</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#deal-c3">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Согласовать количество, адрес доставки, срок пилота.</li><li>Определить, из чьего парка будут пилотные устройства (обычно — из вашего).</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="deal-c4" data-cardtitle="Этап 3 — собрать данные (опросный лист)">
+      <div class="card-head">
+        <h3>Этап 3 — собрать данные (опросный лист)</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#deal-c4">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Wi‑Fi (SSID + пароль) — чтобы предварительно настроить устройства перед отправкой.</li><li>Адрес доставки, ответственный, список сотрудников (для выбора в QR‑привязке).</li><li>Практика: быстрее заполнить самим, чем ждать от клиента.</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="deal-c5" data-cardtitle="Этап 4 — интеграция Imotio ↔ Vocatech">
+      <div class="card-head">
+        <h3>Этап 4 — интеграция Imotio ↔ Vocatech</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#deal-c5">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Запросить API‑ключ у менеджера/в чате Vocatech (после готовности кабинета).</li><li>В Imotio: Настройки → Интеграции → Vocatech → вставить API‑ключ → Сохранить.</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="deal-c6" data-cardtitle="Этап 5 — инструктаж персонала">
+      <div class="card-head">
+        <h3>Этап 5 — инструктаж персонала</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#deal-c6">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Дать короткую инструкцию: QR‑привязка, зарядка, вертикаль/горизонталь (пауза).</li><li>Объяснить «правила игры» и снять тревоги (см. вкладку «Скрипты и Психология»).</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="deal-c7" data-cardtitle="Этап 6 — пилот и контроль качества данных">
+      <div class="card-head">
+        <h3>Этап 6 — пилот и контроль качества данных</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#deal-c7">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Проверить факт выгрузки и качество аудио (часто выгрузка во время зарядки/ночью).</li><li>Настроить сценарий склейки/нарезки фрагментов в Imotio (по тегам/ключевым словам).</li><li>Если много ложных срабатываний — подобрать редкие маркеры/кодовые слова.</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="deal-c8" data-cardtitle="Этап 7 — покупка после пилота">
+      <div class="card-head">
+        <h3>Этап 7 — покупка после пилота</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#deal-c8">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Собрать пожелания по дизайну; получить 2–3 варианта макетов; утвердить.</li><li>Запуск производства — после оплаты (чтобы не остаться с партией).</li><li>Сроки зависят от объёма/очереди/дизайна (ориентир — от недели до месяца).</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="deal-c9" data-cardtitle="Этап 8 — логистика и закрытие">
+      <div class="card-head">
+        <h3>Этап 8 — логистика и закрытие</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#deal-c9">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Доставка к клиенту: фикс. стоимость за адрес, не за количество устройств.</li><li>Возврат пилотных устройств — обычно за счёт клиента.</li><li>Финальная проверка интеграции и сценариев нарезки после поставки «боевых» устройств.</li></ul>
+        
+      </div>
+    </section>
+    
+    </div>
+    
+
+    <div class="pane" id="tab-scripts" data-tab="scripts">
+      <div class="pane-head">
+        <h2>Скрипты и Психология</h2>
+        <p>Как продавать и внедрять так, чтобы пилот не «сломался» на ожиданиях и психологии персонала.</p>
+      </div>
+      
+      
+      
+    <section class="card" id="scripts-c1" data-cardtitle="Позиционирование (честно и безопасно)">
+      <div class="card-head">
+        <h3>Позиционирование (честно и безопасно)</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#scripts-c1">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Говорим прямо: бейдж — инструмент записи и анализа речи сотрудника; речь клиента может попадать частично.</li><li>Ценность для руководства: контроль стандартов, этапов общения, апсейла/кросс‑продаж, качества сервиса.</li><li>Если клиенту критично слышать клиента «целиком» — лучше заранее переформулировать задачу или отказаться от кейса.</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="scripts-c2" data-cardtitle="Как прогреть сотрудников (без саботажа)">
+      <div class="card-head">
+        <h3>Как прогреть сотрудников (без саботажа)</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#scripts-c2">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Не подавать как «карательный контроль». Лучше — как обучение/обратная связь и защита в спорных ситуациях.</li><li>Показать простоту: кнопок нет, пауза — горизонтально, завершение — на зарядку.</li><li>Заранее собрать вопросы/страхи персонала и коротко отработать на старте пилота.</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="scripts-c3" data-cardtitle="Риски и оговорки, которые стоит проговаривать">
+      <div class="card-head">
+        <h3>Риски и оговорки, которые стоит проговаривать</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#scripts-c3">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Фон и «чужая речь» зависят от условий (вплоть до речи из ТВ) — проверяем на пилоте.</li><li>Для точной нарезки нужны маркеры/кодовые слова и дисциплина использования.</li><li>Если сотрудники «забывают» ставить на паузу/на зарядку — качество данных проседает.</li></ul>
+        
+      </div>
+    </section>
+    
+    </div>
+    
+
+    <div class="pane" id="tab-pricing_calc" data-tab="pricing_calc">
+      <div class="pane-head">
+        <h2>Тарифы и Калькулятор</h2>
+        <p>Тарифы и интерактивный расчёт стоимости проекта (пилот/аренда или покупка).</p>
+      </div>
+      
+        <section class="grid-2">
+          <div class="price-card accent-blue" id="price-pilot" data-cardtitle="Пилот / Аренда — тарифы">
+            <div class="price-head">
+              <div class="price-title blue">Пилот / Аренда</div>
+            </div>
+            <div class="price-rows">
+              <div class="row"><div>Оборудование</div><div class="val">0 ₽</div></div>
+              <div class="row"><div>Подписка (Лицензия)</div><div class="val">20 000 ₽ / мес</div></div>
+              <div class="row"><div>Мин. количество</div><div class="val">от 1 шт</div></div>
+            </div>
+            <div class="note">* Скидки не предусмотрены</div>
+          </div>
+
+          <div class="price-card accent-green" id="price-buy" data-cardtitle="Покупка — тарифы">
+            <div class="price-head">
+              <div class="price-title green">Покупка</div>
+            </div>
+            <div class="price-rows">
+              <div class="row"><div>Оборудование</div><div class="val">25 000 ₽ / шт</div></div>
+              <div class="row"><div>Подписка (Месяц)</div><div class="val">12 500 ₽ / мес</div></div>
+              <div class="row"><div>Подписка (Год)</div><div class="val green">~ 9 375 ₽ / мес</div></div>
+            </div>
+            <div class="note">* Возможны скидки до 15% на оборудование. Мин партия 10 шт.</div>
+          </div>
+        </section>
+
+        <section class="calc" id="badgeCalc" data-cardtitle="Калькулятор бейджей">
+  <div class="calc-head">
+    <div>
+      <div class="calc-title">Калькулятор бейджей</div>
+      <div class="calc-sub">Выберите сценарий, задайте количество и срок — и получите итог + детализацию. Кнопка «Скопировать КП» работает офлайн (есть запасной режим копирования).</div>
+    </div>
+    <div class="calc-actions">
+      <button class="btn btn-sm" id="c_copyKP">Скопировать КП</button>
+      <button class="btn btn-sm btn-ghost" id="c_reset">Сброс</button>
+    </div>
+  </div>
+
+  <div class="segmented" aria-label="Сценарий расчёта">
+    <button class="seg-btn active" data-mode="buy" type="button">Покупка</button>
+    <button class="seg-btn" data-mode="pilot" type="button">Пилот / Аренда</button>
+  </div>
+
+  <div class="calc-grid">
+    <div class="field" id="f_qty">
+      <label>Количество бейджей</label>
+      <input type="number" id="c_qty" min="1" step="1" value="10">
+      <div class="hint">Для пилота: 20 000 ₽/мес × количество бейджей × срок (+ доставка по адресам).</div>
+    </div>
+
+    <div class="field" id="f_addr">
+      <label>Доставка (адресов)</label>
+      <input type="number" id="c_addr" min="0" step="1" value="1">
+      <div class="hint">4 000 ₽ за адрес (разово, не зависит от количества)</div>
+    </div>
+
+    <div class="field" id="f_subtype">
+      <label>Подписка (покупка)</label>
+      <select id="c_subType">
+        <option value="monthly" selected>Помесячно — 12 500 ₽/мес/бейдж</option>
+        <option value="yearly">Годом — 112 500 ₽/год/бейдж (~ 9 375 ₽/мес)</option>
+      </select>
+      <div class="hint" id="c_subHint">Срок задаётся в месяцах</div>
+    </div>
+
+    <div class="field" id="f_months">
+      <label>Срок (месяцев)</label>
+      <input type="number" id="c_months" min="1" step="1" value="12">
+      <div class="hint">Используется для помесячной подписки</div>
+    </div>
+
+    <div class="field" id="f_years" style="display:none;">
+      <label>Срок (лет)</label>
+      <input type="number" id="c_years" min="1" step="1" value="1">
+      <div class="hint">Используется для годовой подписки</div>
+    </div>
+
+    <div class="field" id="f_disc">
+      <label>Скидка на оборудование</label>
+      <div class="range">
+        <input type="range" id="c_disc" min="0" max="15" step="1" value="0">
+        <div class="range-val"><span id="c_discVal">0</span>%</div>
+      </div>
+      <div class="hint" id="c_discHint">Скидка применяется при партии от 10 шт (до 15%)</div>
+    </div>
+
+    <div class="field" id="f_pilot" style="display:none;">
+      <label>Срок пилота (месяцев)</label>
+      <input type="number" id="c_pilotMonths" min="1" step="1" value="1">
+      <div class="hint">Подписка: 20 000 ₽/мес за бейдж</div>
+    </div>
+  </div>
+
+  <div class="calc-out">
+    <div class="out-card">
+      <div class="out-label">Оборудование</div>
+      <div class="out-val" id="c_outHw">—</div>
+    </div>
+    <div class="out-card">
+      <div class="out-label">Подписка</div>
+      <div class="out-val" id="c_outSub">—</div>
+    </div>
+    <div class="out-card">
+      <div class="out-label">Доставка</div>
+      <div class="out-val" id="c_outShip">—</div>
+    </div>
+    <div class="out-card total">
+      <div class="out-label">Итого за срок</div>
+      <div class="out-val" id="c_outTotal">—</div>
+    </div>
+  </div>
+
+  <div class="calc-mini" id="c_mini"></div>
+
+  <div class="calc-breakdown" id="c_breakdown"></div>
+</section>
+<section class="card" id="pricing_calc-c1" data-cardtitle="Коротко по тарифам">
+      <div class="card-head">
+        <h3>Коротко по тарифам</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#pricing_calc-c1">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Пилот / Аренда: оборудование 0 ₽ (при использовании парка пилотных устройств), подписка 20 000 ₽/мес, минимум от 1 шт, скидки не предусмотрены.</li><li>Покупка: оборудование 25 000 ₽/шт, подписка 12 500 ₽/мес за устройство, либо 112 500 ₽/год (~ 9 375 ₽/мес).</li><li>Возможны скидки до 15% на оборудование при партии от 10 шт.</li><li>Доставка: 4 000 ₽ за адрес (не зависит от количества устройств).</li></ul>
+        
+      </div>
+    </section>
+    
+    </div>
+    
+
+    <div class="pane" id="tab-tech_faq" data-tab="tech_faq">
+      <div class="pane-head">
+        <h2>Техника и FAQ</h2>
+        <p>Технические нюансы: как приходят записи, как склеивать/нарезать, что важно по Wi‑Fi и диагностике.</p>
+      </div>
+      
+      
+      
+    <section class="card" id="tech_faq-c1" data-cardtitle="Как приходят записи">
+      <div class="card-head">
+        <h3>Как приходят записи</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#tech_faq-c1">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Записи отдаются порциями примерно по 10 минут.</li><li>В Imotio настраивается склейка непрерывной записи и нарезка на диалоги/события.</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="tech_faq-c2" data-cardtitle="Склейка и нарезка: теги/ключевые слова">
+      <div class="card-head">
+        <h3>Склейка и нарезка: теги/ключевые слова</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#tech_faq-c2">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Основной способ — по маркерам начала/конца (теги, ключевые слова).</li><li>Важно выбирать маркеры так, чтобы не срабатывали на разговоры коллег.</li><li>Иногда помогает редкое кодовое слово — сильно повышает точность.</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="tech_faq-c3" data-cardtitle="Доп. способ: «тишина»">
+      <div class="card-head">
+        <h3>Доп. способ: «тишина»</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#tech_faq-c3">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Можно завершать диалог по длительной паузе (порог в секундах).</li><li>Использовать аккуратно: фон/живые процессы могут ломать логику.</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="tech_faq-c4" data-cardtitle="Wi‑Fi и диагностика">
+      <div class="card-head">
+        <h3>Wi‑Fi и диагностика</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#tech_faq-c4">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Wi‑Fi нужен для статусов в кабинете и удалённой диагностики техподдержкой.</li><li>Запись возможна и без Wi‑Fi; выгрузка — при появлении сети (часто во время зарядки).</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="tech_faq-c5" data-cardtitle="Интеграция Imotio ↔ Vocatech">
+      <div class="card-head">
+        <h3>Интеграция Imotio ↔ Vocatech</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#tech_faq-c5">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Нужен API‑ключ от Vocatech; затем он вставляется в настройки интеграции Imotio.</li></ul>
+        
+      </div>
+    </section>
+    
+    </div>
+    
+
+    <div class="pane" id="tab-templates" data-tab="templates">
+      <div class="pane-head">
+        <h2>Шаблоны</h2>
+        <p>Шаблоны «копипастом» — для чата с Vocatech и для клиента.</p>
+      </div>
+      
+      
+      
+    <section class="card" id="templates-c1" data-cardtitle="Vocatech: закрепить клиента">
+      <div class="card-head">
+        <h3>Vocatech: закрепить клиента</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#templates-c1">#</button>
+      </div>
+      <div class="card-body">
+        
+        
+            <div class="tpl">
+              <div class="tpl-head">
+                <div class="tpl-title">Шаблон</div>
+                <button class="btn btn-sm" data-copy="templates-c1-tpl">Копировать</button>
+              </div>
+              <pre id="templates-c1-tpl">Привет! Прошу проверить и закрепить за нами клиента: «{Компания}», ИНН {ИНН}. Спасибо!</pre>
+            </div>
+            
+      </div>
+    </section>
+    
+    <section class="card" id="templates-c2" data-cardtitle="Vocatech: запросить API‑ключ">
+      <div class="card-head">
+        <h3>Vocatech: запросить API‑ключ</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#templates-c2">#</button>
+      </div>
+      <div class="card-body">
+        
+        
+            <div class="tpl">
+              <div class="tpl-head">
+                <div class="tpl-title">Шаблон</div>
+                <button class="btn btn-sm" data-copy="templates-c2-tpl">Копировать</button>
+              </div>
+              <pre id="templates-c2-tpl">Коллеги, добрый день! Нужен API‑ключ для интеграции кабинета клиента «{Компания}». Спасибо!</pre>
+            </div>
+            
+      </div>
+    </section>
+    
+    <section class="card" id="templates-c3" data-cardtitle="Клиенту: данные для пилота (опросный лист)">
+      <div class="card-head">
+        <h3>Клиенту: данные для пилота (опросный лист)</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#templates-c3">#</button>
+      </div>
+      <div class="card-body">
+        
+        
+            <div class="tpl">
+              <div class="tpl-head">
+                <div class="tpl-title">Шаблон</div>
+                <button class="btn btn-sm" data-copy="templates-c3-tpl">Копировать</button>
+              </div>
+              <pre id="templates-c3-tpl">Добрый день! Для подготовки пилота по аудиобейджам пришлите, пожалуйста:
+1) SSID (название Wi‑Fi сети) и пароль в зоне работы бейджей
+2) Адрес доставки
+3) Ответственного (ФИО/телефон)
+4) Список сотрудников (ФИО), которые будут пользоваться бейджами
+
+После получения данных мы предварительно настроим устройства и запустим пилот.</pre>
+            </div>
+            
+      </div>
+    </section>
+    
+    <section class="card" id="templates-c4" data-cardtitle="Руководителю: сообщение для сотрудников (прогрев)">
+      <div class="card-head">
+        <h3>Руководителю: сообщение для сотрудников (прогрев)</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#templates-c4">#</button>
+      </div>
+      <div class="card-body">
+        
+        
+            <div class="tpl">
+              <div class="tpl-head">
+                <div class="tpl-title">Шаблон</div>
+                <button class="btn btn-sm" data-copy="templates-c4-tpl">Копировать</button>
+              </div>
+              <pre id="templates-c4-tpl">Коллеги, стартуем пилот аудиобейджей для улучшения качества коммуникаций. Важно:
+• бейдж включается сам, кнопок нет
+• вертикально — запись, горизонтально — пауза
+• цель — прокачать коммуникацию и получить обратную связь от ИИ (Imotio), личные разговоры не являются целью анализа
+
+Если будут вопросы/опасения — соберите их, мы разберём вместе.</pre>
+            </div>
+            
+      </div>
+    </section>
+    
+    <section class="card" id="templates-c5" data-cardtitle="Клиенту: фиксируем ожидания (чтобы не завысить)">
+      <div class="card-head">
+        <h3>Клиенту: фиксируем ожидания (чтобы не завысить)</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#templates-c5">#</button>
+      </div>
+      <div class="card-body">
+        
+        
+            <div class="tpl">
+              <div class="tpl-head">
+                <div class="tpl-title">Шаблон</div>
+                <button class="btn btn-sm" data-copy="templates-c5-tpl">Копировать</button>
+              </div>
+              <pre id="templates-c5-tpl">Чтобы пилот прошёл успешно, важно зафиксировать ожидания: бейдж качественно пишет речь сотрудника. Речь клиента может попадать частично — поэтому аналитику строим по речи сотрудника через GPT‑модуль (резюме, рекомендации, соблюдение стандартов, предложения акций/услуг). На пилоте проверим условия записи и подберём маркеры для точной нарезки диалогов.</pre>
+            </div>
+            
+      </div>
+    </section>
+    
+    </div>
+    
+
+    <div class="pane" id="tab-materials" data-tab="materials">
+      <div class="pane-head">
+        <h2>Материалы</h2>
+        <p>Артефакты, которые стоит держать под рукой по сделке/пилоту.</p>
+      </div>
+      
+      
+      
+    <section class="card" id="materials-c1" data-cardtitle="Папка материалов (рекомендуемый состав)">
+      <div class="card-head">
+        <h3>Папка материалов (рекомендуемый состав)</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#materials-c1">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Презентация встречи.</li><li>Опросный лист (Wi‑Fi, сотрудники, доставка и т.д.).</li><li>Короткое видео-инструкция (≈ 1 мин).</li><li>Шаблоны договоров (пилот/лицензия; договор на покупку железа — по процессу согласования).</li></ul>
+        
+      </div>
+    </section>
+    
+    <section class="card" id="materials-c2" data-cardtitle="Коммуникации">
+      <div class="card-head">
+        <h3>Коммуникации</h3>
+        <button class="icon-btn" title="Скопировать ссылку на блок" data-link="#materials-c2">#</button>
+      </div>
+      <div class="card-body">
+        <ul class='bullets'><li>Добавление в чат Vocatech — по мере появления сделки, чтобы не перегружать общий канал.</li><li>Фиксируйте: кто ответственный у клиента, какие точки/адреса, какой график смен.</li></ul>
+        
+      </div>
+    </section>
+    
+    </div>
+    
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const tabs = [{"id": "info", "title": "Общая информация"}, {"id": "deal", "title": "Процесс сделки"}, {"id": "scripts", "title": "Скрипты и Психология"}, {"id": "pricing_calc", "title": "Тарифы и Калькулятор"}, {"id": "tech_faq", "title": "Техника и FAQ"}, {"id": "templates", "title": "Шаблоны"}, {"id": "materials", "title": "Материалы"}];
+  const nav = document.getElementById('nav');
+  const panes = [...document.querySelectorAll('.pane')];
+  const topTitle = document.getElementById('topTitle');
+  const q = document.getElementById('q');
+  const results = document.getElementById('results');
+  const toast = document.getElementById('toast');
+
+  function fmt(n) { try { return n.toLocaleString('ru-RU'); } catch { return String(n); } }
+  function money(n) { const v = Math.round(n); return fmt(v) + ' ₽'; }
+  function showToast(msg) { toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 1400); }
+
+  function activateTab(tabId, opts={}) {
+    [...nav.querySelectorAll('.nav-item')].forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+    panes.forEach(p => p.classList.toggle('active', p.dataset.tab === tabId));
+    const t = tabs.find(x => x.id === tabId);
+    topTitle.textContent = t ? t.title : 'База знаний';
+    if (!opts.silent) history.replaceState(null, '', '#tab=' + encodeURIComponent(tabId));
+    results.classList.remove('active'); results.innerHTML = '';
+  }
+
+  function init() {
+    const h = location.hash || '';
+    const m = h.match(/tab=([^&]+)/);
+    const tabId = m ? decodeURIComponent(m[1]) : tabs[0].id;
+    activateTab(tabs.some(t => t.id === tabId) ? tabId : tabs[0].id, { silent: true });
+  }
+  init();
+  window.addEventListener('hashchange', init);
+
+  nav.addEventListener('click', (e) => {
+    const btn = e.target.closest('.nav-item');
+    if (!btn) return;
+    activateTab(btn.dataset.tab);
+    if (q.value.trim()) runSearch();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    if (e.key === 'Escape') {
+      q.value = ''; results.classList.remove('active'); results.innerHTML = ''; clearHighlights();
+    }
+  });
+
+  document.getElementById('collapseAll').addEventListener('click', () => {
+    results.classList.remove('active'); results.innerHTML = ''; clearHighlights(); showToast('Готово');
+  });
+
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-link]');
+    if (!btn) return;
+    const href = btn.getAttribute('data-link');
+    if (!href) return;
+    const id = href.replace('#','');
+    const link = location.origin + location.pathname + '#' + id;
+    try { await navigator.clipboard.writeText(link); showToast('Ссылка скопирована ✅'); }
+    catch { showToast('Не удалось скопировать ссылку'); }
+    history.replaceState(null,'','#'+id);
+  });
+
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-copy]');
+    if (!btn) return;
+    const id = btn.getAttribute('data-copy');
+    const el = document.getElementById(id);
+    if (!el) return;
+    const txt = el.textContent;
+    try { await navigator.clipboard.writeText(txt); showToast('Скопировано ✅'); }
+    catch {
+      const ta = document.createElement('textarea');
+      ta.value = txt; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy'); ta.remove();
+      showToast('Скопировано ✅');
+    }
+  });
+
+  function initChecklist() {
+    document.querySelectorAll('input[type="checkbox"][data-check]').forEach(chk => {
+      const key = 'kb_chk_' + chk.dataset.check;
+      chk.checked = localStorage.getItem(key) === '1';
+      chk.addEventListener('change', () => localStorage.setItem(key, chk.checked ? '1' : '0'));
+    });
+    const exp = document.getElementById('deal-export');
+    const reset = document.getElementById('deal-reset');
+    if (exp) {
+      exp.addEventListener('click', async () => {
+        const items = [];
+        document.querySelectorAll('#deal-checklist input[type="checkbox"][data-check]').forEach(chk => {
+          const label = chk.closest('label')?.innerText?.trim() || chk.dataset.check;
+          items.push({ id: chk.dataset.check, label, checked: chk.checked });
+        });
+        const payload = JSON.stringify({ exportedAt: new Date().toISOString(), items }, null, 2);
+        try { await navigator.clipboard.writeText(payload); showToast('Экспорт в буфер ✅'); }
+        catch { showToast('Не удалось скопировать экспорт'); }
+      });
+    }
+    if (reset) {
+      reset.addEventListener('click', () => {
+        document.querySelectorAll('#deal-checklist input[type="checkbox"][data-check]').forEach(chk => {
+          chk.checked = false;
+          localStorage.setItem('kb_chk_' + chk.dataset.check, '0');
+        });
+        showToast('Чек‑лист сброшен');
+      });
+    }
+  }
+  initChecklist();
+
+  // Search index
+  const index = [];
+  panes.forEach(p => {
+    const tabId = p.dataset.tab;
+    const tabTitle = tabs.find(t => t.id === tabId)?.title || tabId;
+    p.querySelectorAll('[data-cardtitle]').forEach(el => {
+      const id = el.id || '';
+      const title = el.getAttribute('data-cardtitle') || id;
+      const text = (title + ' ' + el.textContent).toLowerCase();
+      index.push({ tabId, tabTitle, id, title, text });
+    });
+  });
+
+  function clearHighlights() {
+    document.querySelectorAll('mark').forEach(m => {
+      const parent = m.parentNode;
+      parent.replaceChild(document.createTextNode(m.textContent), m);
+      parent.normalize();
+    });
+  }
+
+  function highlight(el, term) {
+    if (!term) return;
+    const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walk.nextNode()) nodes.push(walk.currentNode);
+    nodes.forEach(node => {
+      const val = node.nodeValue;
+      const low = val.toLowerCase();
+      const idx = low.indexOf(term);
+      if (idx === -1) return;
+      const span = document.createElement('span');
+      const before = document.createTextNode(val.slice(0, idx));
+      const mark = document.createElement('mark');
+      mark.style.background = 'rgba(251,191,36,.35)';
+      mark.style.borderRadius = '6px';
+      mark.style.padding = '0 2px';
+      mark.textContent = val.slice(idx, idx + term.length);
+      const after = document.createTextNode(val.slice(idx + term.length));
+      span.appendChild(before); span.appendChild(mark); span.appendChild(after);
+      node.parentNode.replaceChild(span, node);
+    });
+  }
+
+  function runSearch() {
+    const term = q.value.trim().toLowerCase();
+    results.innerHTML = '';
+    results.classList.remove('active');
+    clearHighlights();
+    if (!term) return;
+
+    const matches = index.filter(x => x.text.includes(term)).slice(0, 60);
+    results.classList.add('active');
+
+    if (!matches.length) {
+      results.innerHTML = '<div class="result"><strong>Ничего не найдено</strong><div class="where">Попробуйте другой запрос</div></div>';
+      return;
+    }
+
+    matches.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'result';
+      div.innerHTML = '<strong>' + m.title + '</strong>' +
+        '<div class="where">' + m.tabTitle + ' • #' + (m.id || '(без id)') + '</div>';
+      div.addEventListener('click', () => {
+        activateTab(m.tabId);
+        setTimeout(() => {
+          const el = m.id ? document.getElementById(m.id) : null;
+          if (el) { el.scrollIntoView({ behavior:'smooth', block:'start' }); highlight(el, term); }
+        }, 60);
+      });
+      results.appendChild(div);
+    });
+  }
+  q.addEventListener('input', runSearch);
+
+    // Calculator (v2)
+  function initBadgeCalc() {
+    const calc = document.getElementById('badgeCalc');
+    if (!calc) return;
+
+    const segBtns = [...calc.querySelectorAll('.seg-btn')];
+
+    const qty = document.getElementById('c_qty');
+    const addr = document.getElementById('c_addr');
+
+    const subType = document.getElementById('c_subType');
+    const months = document.getElementById('c_months');
+    const years = document.getElementById('c_years');
+
+    const pilotMonths = document.getElementById('c_pilotMonths');
+
+    const disc = document.getElementById('c_disc');
+    const discVal = document.getElementById('c_discVal');
+
+    const subHint = document.getElementById('c_subHint');
+    const discHint = document.getElementById('c_discHint');
+
+    const fSub = document.getElementById('f_subtype');
+    const fMonths = document.getElementById('f_months');
+    const fYears = document.getElementById('f_years');
+    const fDisc = document.getElementById('f_disc');
+    const fPilot = document.getElementById('f_pilot');
+
+    const outHw = document.getElementById('c_outHw');
+    const outSub = document.getElementById('c_outSub');
+    const outShip = document.getElementById('c_outShip');
+    const outTotal = document.getElementById('c_outTotal');
+    const mini = document.getElementById('c_mini');
+    const breakdown = document.getElementById('c_breakdown');
+
+    const copyKP = document.getElementById('c_copyKP');
+    const reset = document.getElementById('c_reset');
+
+    const PR = {
+      pilot_sub_month: 20000,
+      buy_hw: 25000,
+      buy_sub_month: 12500,
+      buy_sub_year: 112500,
+      ship_per_addr: 4000,
+      max_disc: 15
+    };
+
+    function fmt(n) { try { return n.toLocaleString('ru-RU'); } catch { return String(n); } }
+    function money(n) { const v = Math.round(n); return fmt(v) + ' ₽'; }
+
+    function clampInt(v, min, max=1e9) {
+      v = parseInt(v || '0', 10);
+      if (Number.isNaN(v)) v = min;
+      return Math.min(Math.max(v, min), max);
+    }
+
+    function getMode() {
+      const active = segBtns.find(b => b.classList.contains('active'));
+      return active ? active.dataset.mode : 'buy';
+    }
+
+    function setMode(mode) {
+      segBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+      const isBuy = mode === 'buy';
+
+      fSub.style.display = isBuy ? '' : 'none';
+      fDisc.style.display = isBuy ? '' : 'none';
+
+      fPilot.style.display = isBuy ? 'none' : '';
+      // Term fields for buy depend on subscription type
+      const st = subType.value;
+      fMonths.style.display = (isBuy && st === 'monthly') ? '' : 'none';
+      fYears.style.display = (isBuy && st === 'yearly') ? '' : 'none';
+
+      // For pilot — term input lives in fPilot
+      if (!isBuy) {
+        fMonths.style.display = 'none';
+        fYears.style.display = 'none';
+      }
+      recalc();
+    }
+
+    function buildMini(items) {
+      mini.innerHTML = items.map(x => (
+        '<div class="mini-card"><div class="mini-label">' + x.label + '</div><div class="mini-val">' + x.value + '</div></div>'
+      )).join('');
+    }
+
+    function recalc() {
+      const mode = getMode();
+      const qv = clampInt(qty.value, 1);
+      const av = clampInt(addr.value, 0);
+
+      let discPct = clampInt(disc.value, 0, PR.max_disc);
+      discVal.textContent = discPct;
+
+      const ship = av * PR.ship_per_addr;
+
+      let hw = 0, sub = 0, total = 0;
+      let lines = [];
+      let miniItems = [];
+
+      if (mode === 'pilot') {
+        const pm = clampInt(pilotMonths.value, 1);
+        sub = PR.pilot_sub_month * qv * pm;
+        hw = 0;
+        total = sub + ship;
+
+        lines.push('СЦЕНАРИЙ: Пилот / Аренда');
+        lines.push('Срок: ' + pm + ' мес');
+        lines.push('Подписка: 20 000 ₽/мес × ' + qv + ' шт × ' + pm + ' = ' + money(sub));
+        lines.push('Оборудование: 0 ₽ (пилот из парка)');
+        lines.push('Доставка: 4 000 ₽ × ' + av + ' адрес(ов) = ' + money(ship));
+        lines.push('—');
+        lines.push('ИТОГО: ' + money(total));
+
+        miniItems = [
+          { label: 'Подписка/мес за 1 бейдж', value: money(PR.pilot_sub_month) },
+          { label: 'Подписка/мес (всего)', value: money(PR.pilot_sub_month * qv) },
+          { label: 'Доставка (разово)', value: money(ship) },
+          { label: 'Итого за срок', value: money(total) }
+        ];
+      } else {
+        const st = subType.value;
+
+        const eligible = qv >= 10;
+        const appliedDisc = eligible ? discPct : 0;
+        discHint.textContent = eligible
+          ? 'Скидка учтена: ' + appliedDisc + '% (если согласовано)'
+          : 'Скидка не применяется при партии < 10 шт (учтено 0%)';
+
+        const hwBefore = PR.buy_hw * qv;
+        hw = hwBefore * ((100 - appliedDisc) / 100);
+
+        if (st === 'monthly') {
+          const m = clampInt(months.value, 1);
+          sub = PR.buy_sub_month * qv * m;
+          total = hw + sub + ship;
+
+          subHint.textContent = 'Срок задаётся в месяцах';
+          lines.push('СЦЕНАРИЙ: Покупка');
+          lines.push('Количество: ' + qv + ' шт');
+          lines.push('Оборудование: 25 000 ₽ × ' + qv + ' = ' + money(hwBefore));
+          lines.push('Скидка: ' + appliedDisc + '% → ' + money(hw));
+          lines.push('Подписка: 12 500 ₽/мес × ' + qv + ' × ' + m + ' мес = ' + money(sub));
+          lines.push('Доставка: 4 000 ₽ × ' + av + ' адрес(ов) = ' + money(ship));
+          lines.push('—');
+          lines.push('ИТОГО: ' + money(total));
+
+          miniItems = [
+            { label: 'Оборудование на 1 бейдж', value: money(hw / qv) },
+            { label: 'Подписка в месяц (всего)', value: money(PR.buy_sub_month * qv) },
+            { label: 'Итого на 1 бейдж за срок', value: money((hw + sub) / qv) }
+          ];
+        } else {
+          const y = clampInt(years.value, 1);
+          sub = PR.buy_sub_year * qv * y;
+          total = hw + sub + ship;
+
+          subHint.textContent = 'Срок задаётся в годах';
+          const eq = PR.buy_sub_year / 12;
+
+          lines.push('СЦЕНАРИЙ: Покупка');
+          lines.push('Количество: ' + qv + ' шт');
+          lines.push('Оборудование: 25 000 ₽ × ' + qv + ' = ' + money(hwBefore));
+          lines.push('Скидка: ' + appliedDisc + '% → ' + money(hw));
+          lines.push('Подписка: 112 500 ₽/год × ' + qv + ' × ' + y + ' лет = ' + money(sub));
+          lines.push('Эквивалент: ~ ' + money(eq) + ' / мес / бейдж');
+          lines.push('Доставка: 4 000 ₽ × ' + av + ' адрес(ов) = ' + money(ship));
+          lines.push('—');
+          lines.push('ИТОГО: ' + money(total));
+
+          miniItems = [
+            { label: 'Оборудование на 1 бейдж', value: money(hw / qv) },
+            { label: 'Подписка в месяц (всего)', value: money(eq * qv) },
+            { label: 'Итого на 1 бейдж за срок', value: money((hw + sub) / qv) }
+          ];
+        }
+      }
+
+      outHw.textContent = money(hw);
+      outSub.textContent = money(sub);
+      outShip.textContent = money(ship);
+      outTotal.textContent = money(total);
+      breakdown.textContent = lines.join('\n');
+      buildMini(miniItems);
+
+      // save state
+      const state = {
+        mode,
+        qty: clampInt(qty.value, 1),
+        addr: clampInt(addr.value, 0),
+        subType: subType.value,
+        months: clampInt(months.value, 1),
+        years: clampInt(years.value, 1),
+        pilotMonths: clampInt(pilotMonths.value, 1),
+        disc: clampInt(disc.value, 0, PR.max_disc)
+      };
+      localStorage.setItem('kb_calc_v2', JSON.stringify(state));
+    }
+
+    function restore() {
+      const raw = localStorage.getItem('kb_calc_v2');
+      if (!raw) return;
+      try {
+        const st = JSON.parse(raw);
+        if (st.qty) qty.value = st.qty;
+        if (st.addr !== undefined) addr.value = st.addr;
+        if (st.subType) subType.value = st.subType;
+        if (st.months) months.value = st.months;
+        if (st.years) years.value = st.years;
+        if (st.pilotMonths) pilotMonths.value = st.pilotMonths;
+        if (st.disc !== undefined) disc.value = st.disc;
+        if (st.mode) setMode(st.mode);
+      } catch {}
+    }
+
+    // wire (Safari + локальный file:// иногда не триггерит 'input' при клике по стрелкам number-поля — добавляем 'change')
+    segBtns.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+
+    const bindRecalc = (el) => {
+      if (!el) return;
+      el.addEventListener('input', recalc);
+      el.addEventListener('change', recalc);
+    };
+
+    [qty, addr, months, years, pilotMonths, disc].forEach(bindRecalc);
+
+    // Для select лучше слушать change; setMode() внутри сам вызывает recalc()
+    if (subType) {
+      subType.addEventListener('change', () => setMode(getMode()));
+      subType.addEventListener('input', () => setMode(getMode()));
+    }
+
+    copyKP.addEventListener('click', async () => {
+      const txt = breakdown.textContent || '';
+      try {
+        await navigator.clipboard.writeText(txt);
+        showToast('КП скопировано ✅');
+      } catch {
+        // fallback for file:// and strict browsers
+        const ta = document.createElement('textarea');
+        ta.value = txt;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('КП скопировано ✅'); }
+        catch { showToast('Не удалось скопировать КП'); }
+        ta.remove();
+      }
+    });
+
+    reset.addEventListener('click', () => {
+      localStorage.removeItem('kb_calc_v2');
+      qty.value = 10;
+      addr.value = 1;
+      subType.value = 'monthly';
+      months.value = 12;
+      years.value = 1;
+      pilotMonths.value = 1;
+      disc.value = 0;
+      setMode('buy');
+      showToast('Калькулятор сброшен');
+    });
+
+    // initial
+    restore();
+    setMode(getMode());
+  }
+
+  initBadgeCalc();
+})();
+</script>
+</body>
+</html>
